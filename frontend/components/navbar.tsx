@@ -16,7 +16,34 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import Link from "next/link";
+import React from "react";
+import { cn } from "@/lib/utils";
+
+const components: {
+  option: string;
+  value: { title: string; href: string; description: string }[];
+}[] = [
+  {
+    option: "Map",
+    value: [
+      {
+        title: "Map",
+        href: "/map",
+        description: "View the map of the space.",
+      },
+    ],
+  },
+  {
+    option: "Dashboard",
+    value: [
+      {
+        title: "Dashboard",
+        href: "/dashboard",
+        description: "View the dashboard.",
+      },
+    ],
+  },
+];
 
 export default function Navbar() {
   const { setTheme } = useTheme();
@@ -27,24 +54,22 @@ export default function Navbar() {
       <div className="w-full h-full ml-10">
         <NavigationMenu className="w-full">
           <NavigationMenuList className="w-full">
-            <NavigationMenuItem className="w-full">
-              <NavigationMenuTrigger>View Map</NavigationMenuTrigger>
-              <NavigationMenuContent className="w-full">
-                <NavigationMenuLink className="w-full">
-                  <Link href="/map">Map</Link>
-                </NavigationMenuLink>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-            <NavigationMenuItem className="w-full">
-              <NavigationMenuTrigger className="w-full">
-                Dashboard
-              </NavigationMenuTrigger>
-              <NavigationMenuContent className="w-full">
-                <NavigationMenuLink className="w-full">
-                  <Link href="/dashboard">Dashboard</Link>
-                </NavigationMenuLink>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
+            {components.map((component, index) => (
+              <NavigationMenuItem key={index}>
+                <NavigationMenuTrigger>
+                  {component.option}
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                    {component.value.map((c) => (
+                      <ListItem key={c.title} title={c.title} href={c.href}>
+                        {c.description}
+                      </ListItem>
+                    ))}
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            ))}
           </NavigationMenuList>
         </NavigationMenu>
       </div>
@@ -78,3 +103,29 @@ export default function Navbar() {
     </nav>
   );
 }
+
+const ListItem = React.forwardRef<
+  React.ElementRef<"a">,
+  React.ComponentPropsWithoutRef<"a">
+>(({ className, title, children, ...props }, ref) => {
+  return (
+    <li>
+      <NavigationMenuLink asChild>
+        <a
+          ref={ref}
+          className={cn(
+            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+            className
+          )}
+          {...props}
+        >
+          <div className="text-sm font-medium leading-none">{title}</div>
+          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+            {children}
+          </p>
+        </a>
+      </NavigationMenuLink>
+    </li>
+  );
+});
+ListItem.displayName = "ListItem";
