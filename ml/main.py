@@ -6,11 +6,15 @@ from io import BytesIO
 import json
 from ultralytics import YOLO
 from typing import List
+from langchain_ollama.llms import OllamaLLM
 
 
 def calculate_center_from_xyxy(bounding_box):
     x1, y1, x2, y2 = bounding_box
     return (x1 + x2) / 2, (y1 + y2) / 2
+
+
+model = OllamaLLM(model="llama3.2:1b")
 
 
 class ProcessedImage:
