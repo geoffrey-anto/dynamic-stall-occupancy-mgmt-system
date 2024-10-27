@@ -17,6 +17,24 @@ def calculate_center_from_xyxy(bounding_box):
 model = OllamaLLM(model="llama3.2:1b")
 
 
+class Sensor:
+
+    def __init__(self, sensor_id, sensor_type, sensor_name, sensor_use, sensor_range, sensor_cost, sensor_power, sensor_weight, sensor_size, sensor_accuracy):
+        self.sensor_id = sensor_id
+        self.sensor_type = sensor_type
+        self.sensor_name = sensor_name
+        self.sensor_use = sensor_use
+        self.sensor_range = sensor_range
+        self.sensor_cost = sensor_cost
+        self.sensor_power = sensor_power
+        self.sensor_weight = sensor_weight
+        self.sensor_size = sensor_size
+        self.sensor_accuracy = sensor_accuracy
+    
+    def __str__(self):
+        return f"Sensor Name: {self.sensor_name}, Sensor Type: {self.sensor_type}, Sensor Use: {self.sensor_use}, Sensor Range: {self.sensor_range}, Sensor Cost: {self.sensor_cost}, Sensor Power: {self.sensor_power}, Sensor Weight: {self.sensor_weight}, Sensor Size: {self.sensor_size}, Sensor Accuracy: {self.sensor_accuracy}"
+
+
 class ProcessedImage:
 
     def __init__(self, image_as_numpy, bounding_boxes, width_scale, height_scale, project_id, image_url):
@@ -90,6 +108,26 @@ def process(image_urls: List[str], width_scale: int=1, height_scale: int=1):
         processed_image = ProcessedImage(img, boxes, width_scale, height_scale, project_id, image_url)
         
         # Get List Of sensors from the backend to feed into the model
+        sensors_list: List[Sensor] = []
+        
+        response = requests.get("http://localhost:5000/sensors")  # Todo: Change to a db call
+        
+        sensors_data = response.json()
+        
+        for sensor_data in sensors_data:
+            sensor = Sensor(
+                sensor_data["sensor_id"],
+                sensor_data["sensor_type"],
+                sensor_data["sensor_name"],
+                sensor_data["sensor_use"],
+                sensor_data["sensor_range"],
+                sensor_data["sensor_cost"],
+                sensor_data["sensor_power"],
+                sensor_data["sensor_weight"],
+                sensor_data["sensor_size"],
+                sensor_data["sensor_accuracy"]
+            )
+            sensors_list.append(sensor)
         
         # Run thru llm to get optimized plan for the project with the sensors required
         
@@ -103,6 +141,7 @@ def process(image_urls: List[str], width_scale: int=1, height_scale: int=1):
 
 
 def main():
+    # call process function from the api with the image urls and the scale
     process(["https://www.grundriss-schmiede.de/images/buerogrundriss/buerogrundriss.png"], 2, 2)
     return
 
