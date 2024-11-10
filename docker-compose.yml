@@ -3,7 +3,7 @@ version: "3.9"
 services:
   fastapi_service:
     build:
-      context: ./backend
+      context: ./backend_python
       dockerfile: Dockerfile
     hostname: fastapi_service
     container_name: fastapi_service
@@ -20,6 +20,25 @@ services:
     environment:
       - WATCHFILES_FORCE_POLLING=true
 
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - 3003:3003
+    environment:
+      APP_ENV: local
+      PORT: 3003
+      BLUEPRINT_DB_HOST: db_postgres
+      BLUEPRINT_DB_PORT: 5432
+      BLUEPRINT_DB_DATABASE: postgres
+      BLUEPRINT_DB_USERNAME: postgres
+      BLUEPRINT_DB_PASSWORD: postgres
+      BLUEPRINT_DB_SCHEMA: public
+    networks:
+      - my-net
+
   frontend_service:
     build:
       context: ./frontend
@@ -32,6 +51,8 @@ services:
     environment:
       - NODE_ENV=development
     command: npm run dev
+    networks:
+      - my-net
 
   redis-cache:
     image: redis:alpine

@@ -1,13 +1,26 @@
-FROM python:3.9
+FROM golang:1.23-alpine AS build
 
-WORKDIR /home/app
+WORKDIR /app
 
-COPY ./requirements.txt /code/requirements.txt
+COPY go.mod go.sum ./
+RUN go mod download
 
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+COPY . .
 
-COPY ./ /home/app
+RUN go build -o main cmd/api/main.go
 
-EXPOSE 8000
+FROM alpine:3.20.1 AS prod
+WORKDIR /app
+COPY --from=build /app/main /app/main
+ENV PORT=3003
+ENV APP_ENV=local
 
-CMD ["fastapi", "run", "main.py", "--port", "8000", "--host", "0.0.0.0", "--reload"]
+ENV DB_HOST=db_postgres
+ENV DB_PORT=5432
+ENV DB_DATABASE=postgres
+ENV DB_USERNAME=postgres
+ENV DB_PASSWORD=postgres
+ENV DB_SCHEMA=public
+
+EXPOSE ${PORT}
+CMD ["./main"]

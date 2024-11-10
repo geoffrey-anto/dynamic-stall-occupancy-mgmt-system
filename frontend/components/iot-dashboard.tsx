@@ -25,7 +25,7 @@ import { Label } from "@/components/ui/label";
 
 interface Device {
   id: string;
-  projectId: string;
+  project: string;
   occupancy: string;
   name?: string;
   tag?: string;
@@ -159,7 +159,7 @@ export default function IoTDashboard({ projectId }: { projectId: string }) {
           {currentDevices.map((device) => (
             <TableRow key={device.id}>
               <TableCell>{device.id}</TableCell>
-              <TableCell>{device.projectId}</TableCell>
+              <TableCell>{device.project}</TableCell>
               <TableCell>
                 {editingId === device.id ? (
                   <Input

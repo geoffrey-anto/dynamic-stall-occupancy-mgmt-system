@@ -8,6 +8,10 @@ from ultralytics import YOLO
 from typing import List
 from langchain_ollama.llms import OllamaLLM
 
+PROMPT = {
+    "MAIN": lambda p, s: f"Given the image of a {','.join([str(i) for i in p])} with the following bounding boxes {','.join([str(i) for i in s])}, what sensors would you recommend to be used for the project?"
+}
+
 
 def calculate_center_from_xyxy(bounding_box):
     x1, y1, x2, y2 = bounding_box
@@ -130,9 +134,13 @@ def process(image_urls: List[str], width_scale: int=1, height_scale: int=1):
             sensors_list.append(sensor)
         
         # Run thru llm to get optimized plan for the project with the sensors required
+        model_response = model.predict(PROMPT["MAIN"](sensors_list, processed_image))
         
         # Get the optimized plan from the model
         
+        sensors_information = model_response.split("<<>>")[0]
+        optimized_plan = model_response.split("<<>>")[1]
+
         # Save the optimized plan to the database
         
         # Save the processed image to the database
