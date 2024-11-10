@@ -1,6 +1,7 @@
 package database
 
 import (
+	"backend/internal/models"
 	"context"
 	"database/sql"
 	"fmt"
@@ -28,6 +29,8 @@ type Service interface {
 	AddDevice(id, project string) error
 
 	GetOccupanciesOfDevicesForProject(project string) ([]string, error)
+
+	GetAllSensorNames() ([]models.Sensor, error)
 }
 
 type service struct {
@@ -75,6 +78,18 @@ func Init(db *sql.DB) {
 
 	if err != nil {
 		tx.Rollback()
+		log.Fatal(err)
+	}
+
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS projects (id SERIAL PRIMARY KEY, name VARCHAR(255), description VARCHAR(255))")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS sensors (id SERIAL PRIMARY KEY, sensor_id VARCHAR(255), sensor_type INT, sensor_name VARCHAR(255), sensor_use VARCHAR(255), sensor_range VARCHAR(255), sensor_cost FLOAT, sensor_power FLOAT, sensor_weight FLOAT, sensor_size FLOAT, sensor_accuracy FLOAT, sensor_description VARCHAR(255), UNIQUE(sensor_id))")
+
+	if err != nil {
 		log.Fatal(err)
 	}
 
@@ -200,4 +215,32 @@ func (s *service) GetOccupanciesOfDevicesForProject(project string) ([]string, e
 
 	return occupancies, nil
 
+}
+
+func (s *service) GetAllSensorNames() ([]models.Sensor, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	rows, err := dbInstance.db.QueryContext(ctx, "SELECT id, sensor_id, sensor_type, sensor_name, sensor_use, sensor_range, sensor_cost, sensor_power, sensor_weight, sensor_size, sensor_accuracy, sensor_description FROM sensors")
+
+	if err != nil {
+		return nil, fmt.Errorf("error getting sensors: %v", err)
+	}
+
+	defer rows.Close()
+
+	var sensors []models.Sensor
+
+	for rows.Next() {
+		var sensor models.Sensor
+		err := rows.Scan(&sensor.ID, &sensor.SensorID, &sensor.SensorType, &sensor.SensorName, &sensor.SensorUse, &sensor.SensorRange, &sensor.SensorCost, &sensor.SensorPower, &sensor.SensorWeight, &sensor.SensorSize, &sensor.SensorAccuracy, &sensor.SensorDescription)
+
+		if err != nil {
+			return nil, fmt.Errorf("error scanning row: %v", err)
+		}
+
+		sensors = append(sensors, sensor)
+	}
+
+	return sensors, nil
 }

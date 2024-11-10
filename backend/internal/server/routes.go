@@ -16,6 +16,8 @@ func (s *FiberServer) RegisterFiberRoutes() {
 	s.App.Post("/api/v1/device", s.AddDevice)
 
 	s.App.Get("/api/v1/occupancies", s.GetOccupanciesOfDevicesForProject)
+
+	s.App.Get("/api/v1/sensors", s.GetSensors)
 }
 
 func (s *FiberServer) HelloWorldHandler(c *fiber.Ctx) error {
@@ -105,4 +107,17 @@ func (s *FiberServer) GetOccupanciesOfDevicesForProject(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(res)
+}
+
+func (s *FiberServer) GetSensors(c *fiber.Ctx) error {
+	sensors, err := s.db.GetAllSensorNames()
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Error getting sensors",
+			"error":   err.Error(),
+		})
+	}
+
+	return c.JSON(sensors)
 }

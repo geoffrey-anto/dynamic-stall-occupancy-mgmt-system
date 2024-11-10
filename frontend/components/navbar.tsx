@@ -24,22 +24,28 @@ const components: {
   value: { title: string; href: string; description: string }[];
 }[] = [
   {
+    option: "Menu",
+    value: [
+      {
+        title: "Dashboard",
+        href: "/dashboard",
+        description: "View the dashboard.",
+      },
+      {
+        title: "Sensors Catalog",
+        href: "/shop",
+        description:
+          "View the sensors catalog, You can view sensor usage and order new sensors.",
+      },
+    ],
+  },
+  {
     option: "Map",
     value: [
       {
         title: "Map",
         href: "/map",
         description: "View the map of the space.",
-      },
-    ],
-  },
-  {
-    option: "Dashboard",
-    value: [
-      {
-        title: "Dashboard",
-        href: "/dashboard",
-        description: "View the dashboard.",
       },
     ],
   },
