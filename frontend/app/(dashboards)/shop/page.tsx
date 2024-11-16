@@ -27,7 +27,7 @@ const SensorCard: React.FC<SensorCardProps> = ({ sensor }) => {
       <div className="flex justify-between items-center">
         <span className="text-xl font-bold">${sensor.sensor_cost}</span>
         <button className="bg-blue-500 m-4 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Add to Cart
+          Add to project
         </button>
       </div>
       <h2 className="text-2xl font-bold mb-2">{sensor.sensor_name}</h2>

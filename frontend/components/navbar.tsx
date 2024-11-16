@@ -27,6 +27,11 @@ const components: {
     option: "Menu",
     value: [
       {
+        title: "Generate New Project",
+        href: "/gen",
+        description: "Generate New Project Using Floor Plan",
+      },
+      {
         title: "Dashboard",
         href: "/dashboard",
         description: "View the dashboard.",
