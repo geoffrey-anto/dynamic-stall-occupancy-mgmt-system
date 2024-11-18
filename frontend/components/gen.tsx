@@ -4,12 +4,50 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Download } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Gen() {
   const [file, setFile] = useState<File | null>();
+  const { toast } = useToast();
 
   const handleDownload = () => {
-    alert("Floor plan generation and download would happen here!");
+    try {
+      if (!file) {
+        return alert("Please upload a file first.");
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+      toast({
+        title: "Project Creation Started",
+        description:
+          "Your project is being created. You will be redirected to the dashboard once it's done.",
+      });
+
+      fetch(`${process.env.NEXT_PUBLIC_ML_SERVER_URL}/project/create`, {
+        method: "POST",
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          if (data.status === "error") {
+            alert(data.message);
+          } else {
+            toast({
+              title: "Project Created",
+              description:
+                "Your project has been created successfully. You will be redirected to the dashboard.",
+            });
+
+            setTimeout(() => {
+              window.location.href = `/dashboard/${data.project_id}`;
+            }, 3000);
+          }
+        });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -37,6 +75,8 @@ export default function Gen() {
                 <Input
                   type="file"
                   id="floorPlan"
+                  name="floorPlan"
+                  accept=".jpg,.jpeg,.png"
                   placeholder="e.g., Modern 3-bedroom house with open kitchen and large windows..."
                   onChange={(e) => setFile(e.target.files?.item(0))}
                 />

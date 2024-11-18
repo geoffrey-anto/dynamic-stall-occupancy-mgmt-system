@@ -4,9 +4,13 @@ WORKDIR /home/app
 
 COPY ./requirements.txt /code/requirements.txt
 
+RUN apt-get update && apt-get install libgl1 -y
+
+RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-COPY ./ /home/app
+COPY . .
 
 EXPOSE 8000
 

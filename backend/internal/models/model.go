@@ -14,3 +14,13 @@ type Sensor struct {
 	SensorAccuracy    float64 `json:"sensor_accuracy" db:"sensor_accuracy"`       // Accuracy
 	SensorDescription string  `json:"sensor_description" db:"sensor_description"` // Description of the sensor
 }
+
+type Project struct {
+	ID                  int    `json:"id" db:"id"`                                     // Primary key
+	Name                string `json:"name" db:"name"`                                 // Name of the project
+	Description         string `json:"description" db:"description"`                   // Description of the project
+	Instructions        string `json:"instructions" db:"instructions"`                 // Instructions for the project
+	ProjectName         string `json:"project_name" db:"project_name"`                 // Name of the project
+	SensorConfiguration string `json:"sensor_configuration" db:"sensor_configuration"` // Configuration of the sensors
+	Image               string `json:"image" db:"image"`                               // Image of the project
+}

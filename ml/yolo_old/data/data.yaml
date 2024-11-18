@@ -1,0 +1,13 @@
+train: ./yolo_old/data/train/images
+val: ./yolo_old/data/valid/images
+test: ./yolo_old/data/test/images
+
+nc: 5
+names: ['conference_room_slot', 'office_room_slot', 'parking_slot', 'rest_room_slot', 'storage_room_slot']
+
+roboflow:
+  workspace: geo-jskdb
+  project: pjt-sdlzw
+  version: 4
+  license: MIT
+  url: https://universe.roboflow.com/geo-jskdb/pjt-sdlzw/dataset/4

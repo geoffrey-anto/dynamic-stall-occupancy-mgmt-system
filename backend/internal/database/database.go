@@ -31,6 +31,8 @@ type Service interface {
 	GetOccupanciesOfDevicesForProject(project string) ([]string, error)
 
 	GetAllSensorNames() ([]models.Sensor, error)
+
+	GetProjectByName(name string) (models.Project, error)
 }
 
 type service struct {
@@ -74,14 +76,14 @@ func Init(db *sql.DB) {
 		log.Fatal(err)
 	}
 
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS occupancy (id VARCHAR(255) PRIMARY KEY, occupancy VARCHAR(255), project VARCHAR(255))")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS occupancy (id VARCHAR(255) PRIMARY KEY, occupancy VARCHAR(255), project VARCHAR(255), tag VARCHAR(255), name VARCHAR(255), position VARCHAR(255), UNIQUE(id))")
 
 	if err != nil {
 		tx.Rollback()
 		log.Fatal(err)
 	}
 
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS projects (id SERIAL PRIMARY KEY, name VARCHAR(255), description VARCHAR(255))")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS projects (id SERIAL PRIMARY KEY, name VARCHAR(255), description TEXT, instructions TEXT, project_name VARCHAR(255), sensor_configuration TEXT, image TEXT, UNIQUE(name))")
 
 	if err != nil {
 		log.Fatal(err)
@@ -179,7 +181,9 @@ func (s *service) AddDevice(id, project string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
-	_, err := dbInstance.db.ExecContext(ctx, "INSERT INTO occupancy (id, project) VALUES ($1, $2)", id, project)
+	occupancy := "false"
+
+	_, err := dbInstance.db.ExecContext(ctx, "INSERT INTO occupancy (id, project, occupancy) VALUES ($1, $2, $3)", id, project, occupancy)
 
 	if err != nil {
 		return fmt.Errorf("error adding device: %v", err)
@@ -192,7 +196,7 @@ func (s *service) GetOccupanciesOfDevicesForProject(project string) ([]string, e
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
-	rows, err := dbInstance.db.QueryContext(ctx, "SELECT occupancy, id, project FROM occupancy WHERE project = $1", project)
+	rows, err := dbInstance.db.QueryContext(ctx, "SELECT occupancy, id, project, tag, name, position FROM occupancy WHERE project = $1", project)
 
 	if err != nil {
 		return nil, fmt.Errorf("error getting occupancies: %v", err)
@@ -203,14 +207,14 @@ func (s *service) GetOccupanciesOfDevicesForProject(project string) ([]string, e
 	var occupancies []string
 
 	for rows.Next() {
-		var occupancy, id, project string
-		err := rows.Scan(&occupancy, &id, &project)
+		var occupancy, id, project, tag, name, position string
+		err := rows.Scan(&occupancy, &id, &project, &tag, &name, &position)
 
 		if err != nil {
 			return nil, fmt.Errorf("error scanning row: %v", err)
 		}
 
-		occupancies = append(occupancies, fmt.Sprintf("%s:%s:%s", id, occupancy, project))
+		occupancies = append(occupancies, fmt.Sprintf("%s:%s:%s:%s:%s:%s", id, occupancy, project, tag, name, position))
 	}
 
 	return occupancies, nil
@@ -243,4 +247,18 @@ func (s *service) GetAllSensorNames() ([]models.Sensor, error) {
 	}
 
 	return sensors, nil
+}
+
+func (s *service) GetProjectByName(name string) (models.Project, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	var project models.Project
+	err := dbInstance.db.QueryRowContext(ctx, "SELECT id, name, description, instructions, project_name, sensor_configuration, image FROM projects WHERE name = $1", name).Scan(&project.ID, &project.Name, &project.Description, &project.Instructions, &project.ProjectName, &project.SensorConfiguration, &project.Image)
+
+	if err != nil {
+		return models.Project{}, fmt.Errorf("error getting project: %v", err)
+	}
+
+	return project, nil
 }
