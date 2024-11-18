@@ -18,6 +18,8 @@ func (s *FiberServer) RegisterFiberRoutes() {
 	s.App.Get("/api/v1/occupancies", s.GetOccupanciesOfDevicesForProject)
 
 	s.App.Get("/api/v1/sensors", s.GetSensors)
+
+	s.App.Get("/api/v1/project", s.GetProjectById)
 }
 
 func (s *FiberServer) HelloWorldHandler(c *fiber.Ctx) error {
@@ -103,6 +105,8 @@ func (s *FiberServer) GetOccupanciesOfDevicesForProject(c *fiber.Ctx) error {
 			"id":        strings.Split(occupancy, ":")[0],
 			"occupancy": strings.Split(occupancy, ":")[1],
 			"project":   strings.Split(occupancy, ":")[2],
+			"tag":       strings.Split(occupancy, ":")[3],
+			"name":      strings.Split(occupancy, ":")[4],
 		})
 	}
 
@@ -120,4 +124,19 @@ func (s *FiberServer) GetSensors(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(sensors)
+}
+
+func (s *FiberServer) GetProjectById(c *fiber.Ctx) error {
+	project_name := c.Query("project_name")
+
+	projects, err := s.db.GetProjectByName(project_name)
+
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Error getting projects",
+			"error":   err.Error(),
+		})
+	}
+
+	return c.JSON(projects)
 }

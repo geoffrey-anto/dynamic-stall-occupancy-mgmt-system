@@ -3,8 +3,8 @@
 
 const char* device_id = "f8d6c431-32a8-4374-8e1e-f7703deee370";
 
-const char* ssid = "joseph";
-const char* password = "Joseph@1972";
+const char* ssid = "XXXXXX";
+const char* password = "XXXXXX";
 
 const char* serverUrl = "http://localhost:8080/api/occupancy";
 

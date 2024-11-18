@@ -105,47 +105,53 @@ def process(image_urls: List[str], width_scale: int=1, height_scale: int=1):
         
         yolo = YOLO("yolo11n.pt")
         
-        pred = yolo.predict(image_url)
+        yolo.train(data="./yolo/data/data.yaml", epochs=10, batch=16)
         
-        boxes = json.loads(pred[0].to_json())
+        # pred = yolo.predict(image_url)
+        
+        # print(pred)
+        
+        # boxes = json.loads(pred[0].to_json())
 
-        processed_image = ProcessedImage(img, boxes, width_scale, height_scale, project_id, image_url)
+        # processed_image = ProcessedImage(img, boxes, width_scale, height_scale, project_id, image_url)
         
-        # Get List Of sensors from the backend to feed into the model
-        sensors_list: List[Sensor] = []
+        # # Get List Of sensors from the backend to feed into the model
+        # sensors_list: List[Sensor] = []
         
-        response = requests.get("http://localhost:5000/sensors")  # Todo: Change to a db call
+        # response = requests.get("http://localhost:5000/sensors")  # Todo: Change to a db call
         
-        sensors_data = response.json()
+        # sensors_data = response.json()
         
-        for sensor_data in sensors_data:
-            sensor = Sensor(
-                sensor_data["sensor_id"],
-                sensor_data["sensor_type"],
-                sensor_data["sensor_name"],
-                sensor_data["sensor_use"],
-                sensor_data["sensor_range"],
-                sensor_data["sensor_cost"],
-                sensor_data["sensor_power"],
-                sensor_data["sensor_weight"],
-                sensor_data["sensor_size"],
-                sensor_data["sensor_accuracy"]
-            )
-            sensors_list.append(sensor)
+        # for sensor_data in sensors_data:
+        #     sensor = Sensor(
+        #         sensor_data["sensor_id"],
+        #         sensor_data["sensor_type"],
+        #         sensor_data["sensor_name"],
+        #         sensor_data["sensor_use"],
+        #         sensor_data["sensor_range"],
+        #         sensor_data["sensor_cost"],
+        #         sensor_data["sensor_power"],
+        #         sensor_data["sensor_weight"],
+        #         sensor_data["sensor_size"],
+        #         sensor_data["sensor_accuracy"]
+        #     )
+        #     sensors_list.append(sensor)
         
-        # Run thru llm to get optimized plan for the project with the sensors required
-        model_response = model.predict(PROMPT["MAIN"](sensors_list, processed_image))
+        # # Run thru llm to get optimized plan for the project with the sensors required
+        # model_response = model.predict(PROMPT["MAIN"](sensors_list, processed_image))
         
-        # Get the optimized plan from the model
+        # # Get the optimized plan from the model
+        # sensors_information = model_response.split("<<>>")[0]
+        # optimized_plan = model_response.split("<<>>")[1]
         
-        sensors_information = model_response.split("<<>>")[0]
-        optimized_plan = model_response.split("<<>>")[1]
-
-        # Save the optimized plan to the database
+        # # Save the optimized plan to the database
+        # save_to_database("optimized_plan", optimized_plan)
         
-        # Save the processed image to the database
+        # # Save the processed image to the database
+        # save_to_database("processed_image", processed_image)
         
-        # Notify the frontend that the project is ready by updating the status of the project to ready in the database
+        # # Notify the frontend that the project is ready by updating the status of the project to ready in the database
+        # update_project_status(project_id, "ready")
 
 
 def main():

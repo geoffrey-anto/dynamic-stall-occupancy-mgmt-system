@@ -18,24 +18,33 @@ import {
 } from "@/components/ui/navigation-menu";
 import React from "react";
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 const components: {
   option: string;
-  value: { title: string; href: string; description: string }[];
+  value: { title: string; href: string; description: string; carry: boolean }[];
 }[] = [
   {
     option: "Menu",
     value: [
       {
+        title: "Generate New Project",
+        href: "/gen",
+        description: "Generate New Project Using Floor Plan",
+        carry: false,
+      },
+      {
         title: "Dashboard",
         href: "/dashboard",
         description: "View the dashboard.",
+        carry: true,
       },
       {
         title: "Sensors Catalog",
         href: "/shop",
         description:
           "View the sensors catalog, You can view sensor usage and order new sensors.",
+        carry: false,
       },
     ],
   },
@@ -46,6 +55,7 @@ const components: {
         title: "Map",
         href: "/map",
         description: "View the map of the space.",
+        carry: true,
       },
     ],
   },
@@ -53,6 +63,9 @@ const components: {
 
 export default function Navbar() {
   const { setTheme } = useTheme();
+  const url = usePathname();
+
+  const id = url.split("/")[2] || "";
 
   return (
     <nav className="flex items-center justify-between p-4 bg-background">
@@ -68,7 +81,11 @@ export default function Navbar() {
                 <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
                     {component.value.map((c) => (
-                      <ListItem key={c.title} title={c.title} href={c.href}>
+                      <ListItem
+                        key={c.title}
+                        title={c.title}
+                        href={c.carry ? `${c.href}/${id}` : c.href}
+                      >
                         {c.description}
                       </ListItem>
                     ))}

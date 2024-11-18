@@ -4,10 +4,23 @@ from typing import Annotated, Optional
 from fastapi import Depends
 
 
-class Project(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(index=True)
-    description: Optional[str] = Field(default=None)
+class Occupancy(SQLModel, table=True):
+    id: str = Field(primary_key=True)
+    occupancy: str
+    project: str
+    tag: str
+    name: str
+    position: str
+
+    
+class Projects(SQLModel, table=True):
+    id: Optional[int] = Field(primary_key=True)
+    name: str
+    description: str
+    instructions: str
+    project_name: str
+    sensor_configuration: str
+    image: str
 
 
 postgres_url = f"postgresql://{os.environ['POSTGRES_USER']}:{os.environ['POSTGRES_PASSWORD']}@{os.environ['POSTGRES_HOST']}:{os.environ['POSTGRES_PORT']}/{os.environ['POSTGRES_DB']}"
