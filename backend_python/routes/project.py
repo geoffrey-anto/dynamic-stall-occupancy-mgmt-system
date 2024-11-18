@@ -274,6 +274,7 @@ def create_new_project(file: Annotated[bytes, File()], db: SessionDep):
     project_id = uuid4()
     # Get the image    
     os.makedirs("static", exist_ok=True)
+    
     with open(f"static/{project_id}.png", "wb") as buffer:
         buffer.write(file)
     
