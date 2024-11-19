@@ -100,25 +100,27 @@ const Page = ({
               style={{
                 top: sensor.position[1],
                 left: sensor.position[0],
-                backgroundColor: devices.has(sensor.room_id)
-                  ? devices.get(sensor.room_id) === "false"
+                backgroundColor: devices.has(sensor.room_id + "")
+                  ? devices.get(sensor.room_id + "") === "false"
                     ? "green"
                     : "red"
                   : "gray",
                 border: "2px solid",
-                borderColor: devices.has(sensor.room_id)
-                  ? devices.get(sensor.room_id) === "false"
+                borderColor: devices.has(sensor.room_id + "")
+                  ? devices.get(sensor.room_id + "") === "false"
                     ? "green"
                     : "red"
                   : "gray",
                 zIndex: 10,
               }}
             >
-              {devices.has(sensor.room_id)
-                ? devices.get(sensor.room_id) === "false"
-                  ? "Vacant"
-                  : "Occupied"
-                : "Not Available"}
+              {sensor.room_id +
+                " " +
+                (devices.has(sensor.room_id + "")
+                  ? devices.get(sensor.room_id + "") === "false"
+                    ? "Vacant"
+                    : "Occupied"
+                  : "Not Available")}
             </div>
           );
         })}

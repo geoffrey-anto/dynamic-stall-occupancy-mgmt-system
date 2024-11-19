@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Cpu, Wifi, LayoutDashboard, Map, Zap } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -25,9 +26,12 @@ export default function Home() {
               Benefits
             </a>
           </div>
-          <button className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-md transition">
+          <Link
+            href={"/gen"}
+            className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-md transition"
+          >
             Get Started
-          </button>
+          </Link>
           <button
             className="md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}

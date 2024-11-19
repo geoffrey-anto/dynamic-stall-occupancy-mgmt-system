@@ -185,12 +185,12 @@ export default function IoTDashboard({ projectId }: { projectId: string }) {
               <TableCell>
                 <span
                   className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                    device.occupancy === "true"
+                    device.occupancy === "false"
                       ? "bg-green-100 text-green-800"
                       : "bg-red-100 text-red-800"
                   }`}
                 >
-                  {device.occupancy !== "true" ? "Occupied" : "Vacant"}
+                  {device.occupancy === "true" ? "Occupied" : "Vacant"}
                 </span>
               </TableCell>
               <TableCell>
