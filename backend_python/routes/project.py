@@ -57,6 +57,7 @@ Give a sensor for each room in the layout. Make sure to give the sensor that is 
 
 ONLY OUTPUT JUST THE VALID JSON, NO OTHER TEXT SHOULD BE PRESENT IN THE OUTPUT, NO MARKDOWN TOO JUST RAW JSON OUTPUT
 """,
+
 "REASON": lambda p, s, sp: f"""
 You are professional in the field of IOT and Sensor Optimal Placement!
 You are given the sensor placement with the rooms layout and the sensors available.
@@ -73,6 +74,7 @@ Give a reason for the placement of the sensors in the rooms layout. Make sure to
 
 OUTPUT ONLY VALID MARKDOWN TEXT, NO JSON OR ANY OTHER TEXT SHOULD BE PRESENT IN THE OUTPUT
 """,
+
 "DESCRIPTION": lambda p, s, sp, r: f"""
 You are professional in the field of IOT and Sensor Optimal Placement!
 You are given the sensor placement with the rooms layout and the sensors available.
@@ -297,7 +299,7 @@ def create_new_project(file: Annotated[bytes, File()], db: SessionDep):
     value = json.loads(response[3])
     
     for i in range(min(len(available_sensors), len(value))):
-        db.add(Occupancy(id=available_sensors[i], occupancy="false", project=project_id, tag=value[i]["room_id"] + "_" + value[i]["room_type"], name=value[i]["sensor_id"], position=value[i]["position"]))
+        db.add(Occupancy(id=available_sensors[i], occupancy="false", project=project_id, tag=str(value[i]["room_id"]) + "_" + value[i]["room_type"], name=value[i]["sensor_id"], position=value[i]["position"]))
     
     db.commit()
     

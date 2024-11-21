@@ -22,7 +22,13 @@ import { usePathname } from "next/navigation";
 
 const components: {
   option: string;
-  value: { title: string; href: string; description: string; carry: boolean }[];
+  value: {
+    title: string;
+    href: string;
+    description: string;
+    carry: boolean;
+    show: boolean;
+  }[];
 }[] = [
   {
     option: "Menu",
@@ -32,12 +38,14 @@ const components: {
         href: "/gen",
         description: "Generate New Project Using Floor Plan",
         carry: false,
+        show: false,
       },
       {
         title: "Dashboard",
         href: "/dashboard",
         description: "View the dashboard.",
         carry: true,
+        show: true,
       },
       {
         title: "Sensors Catalog",
@@ -45,6 +53,7 @@ const components: {
         description:
           "View the sensors catalog, You can view sensor usage and order new sensors.",
         carry: false,
+        show: true,
       },
     ],
   },
@@ -56,6 +65,7 @@ const components: {
         href: "/map",
         description: "View the map of the space.",
         carry: true,
+        show: true,
       },
     ],
   },
@@ -67,32 +77,38 @@ export default function Navbar() {
 
   const id = url.split("/")[2] || "";
 
+  if (url.split("/")[1] == "gen") {
+    return null;
+  }
+
   return (
     <nav className="flex items-center justify-between p-4 bg-background">
       <div className="text-xl font-bold">Logo</div>
       <div className="w-full h-full ml-10">
         <NavigationMenu className="w-full">
           <NavigationMenuList className="w-full">
-            {components.map((component, index) => (
-              <NavigationMenuItem key={index}>
-                <NavigationMenuTrigger>
-                  {component.option}
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                    {component.value.map((c) => (
-                      <ListItem
-                        key={c.title}
-                        title={c.title}
-                        href={c.carry ? `${c.href}/${id}` : c.href}
-                      >
-                        {c.description}
-                      </ListItem>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            ))}
+            {components.map((component, index) => {
+              return component ? (
+                <NavigationMenuItem key={index}>
+                  <NavigationMenuTrigger>
+                    {component.option}
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                      {component.value.map((c) => (
+                        <ListItem
+                          key={c.title}
+                          title={c.title}
+                          href={c.carry ? `${c.href}/${id}` : c.href}
+                        >
+                          {c.description}
+                        </ListItem>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              ) : null;
+            })}
           </NavigationMenuList>
         </NavigationMenu>
       </div>
