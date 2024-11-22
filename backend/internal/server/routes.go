@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -37,6 +38,13 @@ func (s *FiberServer) healthHandler(c *fiber.Ctx) error {
 func (s *FiberServer) UpdateOccupancy(c *fiber.Ctx) error {
 	occupancy := c.FormValue("occupancy")
 	id := c.FormValue("id")
+	fmt.Printf("Occupancy: %s, ID: %s\n", occupancy, id)
+
+	if occupancy == "0" {
+		occupancy = "false"
+	} else if occupancy == "1" {
+		occupancy = "true"
+	}
 
 	if occupancy == "" || id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{

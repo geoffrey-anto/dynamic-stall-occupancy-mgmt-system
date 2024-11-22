@@ -162,13 +162,21 @@ func (s *service) UpdateOccupancy(id, occupancy string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
-	err := dbInstance.db.QueryRowContext(ctx, "SELECT id FROM occupancy WHERE id = $1", id).Scan(&id)
+	o := ""
+
+	err := dbInstance.db.QueryRowContext(ctx, "SELECT id, occupancy FROM occupancy WHERE id = $1", id).Scan(&id, &o)
 
 	if err != nil {
 		return fmt.Errorf("id not found: %v", err)
 	}
 
-	_, err = dbInstance.db.ExecContext(ctx, "UPDATE occupancy SET occupancy = $1 WHERE id = $2", occupancy, id)
+	if o == "true" {
+		o = "false"
+	} else {
+		o = "true"
+	}
+
+	_, err = dbInstance.db.ExecContext(ctx, "UPDATE occupancy SET occupancy = $1 WHERE id = $2", o, id)
 
 	if err != nil {
 		return fmt.Errorf("error updating occupancy: %v", err)

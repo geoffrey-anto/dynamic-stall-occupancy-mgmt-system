@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
 interface Project {
@@ -76,9 +75,16 @@ const Page = ({
     fetchDevices();
 
     fetchProject();
-  }, [project_id]);
-  console.log(project);
-  console.log(devices);
+
+    const interval = setInterval(() => {
+      fetchDevices();
+      fetchProject();
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
   return (
     <div className="w-screen h-full items-center justify-center flex flex-col">
       <h1 className="text-3xl text-center">Layout</h1>
@@ -111,16 +117,16 @@ const Page = ({
                     ? "green"
                     : "red"
                   : "gray",
-                zIndex: 10,
+                zIndex: devices.has(sensor.room_id + "") ? 20 : 10,
               }}
             >
               {sensor.room_id +
                 " " +
                 (devices.has(sensor.room_id + "")
                   ? devices.get(sensor.room_id + "") === "false"
-                    ? "Vacant"
-                    : "Occupied"
-                  : "Not Available")}
+                    ? "V"
+                    : "O"
+                  : "N")}
             </div>
           );
         })}

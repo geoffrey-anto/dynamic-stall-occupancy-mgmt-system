@@ -52,7 +52,14 @@ const components: {
         href: "/shop",
         description:
           "View the sensors catalog, You can view sensor usage and order new sensors.",
-        carry: false,
+        carry: true,
+        show: true,
+      },
+      {
+        title: "instructions",
+        href: "/instructions",
+        description: "View the instructions.",
+        carry: true,
         show: true,
       },
     ],
@@ -82,7 +89,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="flex items-center justify-between p-4 bg-background">
+    <nav className="z-30 flex items-center justify-between p-4 bg-background">
       <div className="text-xl font-bold">Logo</div>
       <div className="w-full h-full ml-10">
         <NavigationMenu className="w-full">

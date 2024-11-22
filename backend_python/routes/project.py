@@ -96,6 +96,72 @@ OUTPUT ONLY VALID MARKDOWN TEXT, NO JSON OR ANY OTHER TEXT SHOULD BE PRESENT IN 
 """,
 }
 
+RES = {
+    "PLACEMENT": """[
+  {"room_id": "8", "sensor_id": "RFID-FP-003", "room_type": "conference_room_slot", "position": "[90.15676500000001, 111.247275]" },
+  {"room_id": "4", "sensor_id": "PIR-002", "room_type": "office_room_slot", "position": "[90.47964499999999, 529.10071]" },
+  {"room_id": "5", "sensor_id": "PIR-002", "room_type": "office_room_slot", "position": "[91.924995, 110.45950500000001]" },
+  {"room_id": "1", "sensor_id": "PIR-002", "room_type": "office_room_slot", "position": "[221.0551, 84.16551]" },
+  {"room_id": "3", "sensor_id": "PIR-002", "room_type": "office_room_slot", "position": "[221.54434000000003, 550.92975]" },
+  {"room_id": "7", "sensor_id": "PIR-002", "room_type": "conference_room_slot", "position": "[270.748625, 319.995855]" },
+  {"room_id": "11", "sensor_id": "PIR-002", "room_type": "office_room_slot", "position": "[274.70694000000003, 320.134645]" },
+  {"room_id": "0", "sensor_id": "PIR-002", "room_type": "office_room_slot", "position": "[349.24396, 84.401275]" },
+  {"room_id": "2", "sensor_id": "PIR-002", "room_type": "office_room_slot", "position": "[349.59424, 551.15419]" },
+  {"room_id": "10", "sensor_id": "PIR-002", "room_type": "office_room_slot", "position": "[504.75058, 169.015275]" },
+  {"room_id": "14", "sensor_id": "PIR-002", "room_type": "conference_room_slot", "position": "[507.97918500000003, 528.870345]" },
+  {"room_id": "6", "sensor_id": "PIR-002", "room_type": "rest_room_slot", "position": "[557.737425, 457.0719]" },
+  {"room_id": "12", "sensor_id": "PIR-002", "room_type": "rest_room_slot", "position": "[561.196715, 359.57547]" },
+  {"room_id": "9", "sensor_id": "PIR-002", "room_type": "office_room_slot", "position": "[616.6718149999999, 596.570615]" },
+  {"room_id": "13", "sensor_id": "PIR-002", "room_type": "office_room_slot", "position": "[618.64374, 146.25842500000002]" }
+]""",
+    "REASON": """### Sensor Placement Explanation
+
+The sensor placement has been optimized based on the room types and dimensions. Here's an explanation of each sensor placement:
+
+*   **Room 8 (Conference Room Slot)**: Two ultrasonic sensors (PIR-002) have been placed in this room to measure distance accurately. The first US-001 is placed near the center of the room, while the second one is placed at a corner to capture the entire area.
+*   **Room 4 and 1 (Office Rooms Slots)**: One PIR sensor (PIR-002) has been placed in each room to detect motion. Both sensors are positioned at different locations within the rooms to cover more area, while minimizing potential false positives.
+*   **Room 3 (Office Room Slot)**: The second ultrasonic sensor (US-001) is placed in this room to complement the first US-001 in room 8 and provide a complete coverage of the conference area.
+
+### Sensor Placement Rationale
+
+The rationale behind this placement is:
+
+1.  **Distance Measurement**: Two ultrasonic sensors are used in rooms where accurate distance measurement is crucial, such as conference rooms.
+2.  **Motion Detection**: One PIR sensor is placed in each office room to detect motion and prevent false positives.
+
+These placements ensure that the sensor coverage is comprehensive while minimizing potential issues like false readings or missed areas.""",
+    "DESCRIPTION": """**Smart Office Sensor Placement**
+=====================================
+
+The goal of this project is to implement a comprehensive sensor placement system for an office space. The system aims to provide accurate distance measurement and motion detection capabilities in various rooms.
+
+### Sensor Placement
+
+The sensor placement is as follows:
+
+*   **Ultrasonic Sensors (US-001)**:
+    *   Room 8: placed in the center of the conference room to measure distance accurately.
+    *   Room 5: placed near the entrance to detect motion from multiple directions.
+    *   Room 11: placed on a corner to capture movement from different angles.
+*   **PIR Sensors (PIR-002)**:
+    *   Room 4: placed at eye level to detect vertical motion and prevent false positives.
+    *   Room 1: placed near the entrance to detect motion from multiple directions.
+
+### Rationale
+
+The rationale behind this placement is:
+
+*   Distance Measurement: Two ultrasonic sensors are used in rooms where accurate distance measurement is crucial, such as conference rooms. This ensures that there is no blind spot or area without coverage.
+*   Motion Detection: One PIR sensor is placed in each office room to detect motion and prevent false positives.
+
+These placements ensure that the sensor coverage is comprehensive while minimizing potential issues like false readings or missed areas.
+
+### Next Steps
+
+The next step would be to implement a system that can read the sensor data, process it, and then send the processed data back to the central server using cellular networks.""",
+    
+}
+
 project_router = APIRouter()
 
 
@@ -247,17 +313,24 @@ def process(image_urls: List[str], width_scale: int=1, height_scale: int=1):
             
         # # Run thru llm to get optimized plan for the project with the sensors required
         try:
-            project_json = model.invoke(PROMPT["PLACEMENT"](processed_image, sensors_list))
+            # project_json = model.invoke(PROMPT["PLACEMENT"](processed_image, sensors_list))
+            # print(project_json)
+            # with open("project.json", "w") as buffer:
+            #     buffer.write(project_json)
+            project_json = RES["PLACEMENT"]
+                        
+            # project_sensor_instructions = model.invoke(PROMPT["REASON"](processed_image, sensors_list, project_json))
+            # print(project_sensor_instructions)
+            # with open("reason.md", "w") as buffer:
+            #     buffer.write(project_sensor_instructions)
+            project_sensor_instructions = RES["REASON"]
+                        
+            # project_description = model.invoke(PROMPT["DESCRIPTION"](processed_image, sensors_list, project_json, project_sensor_instructions))
+            # with open("description.md", "w") as buffer:
+            #     buffer.write(project_description)
+            # print(project_description)
+            project_description = RES["DESCRIPTION"]
             
-            print(project_json)
-            
-            project_sensor_instructions = model.invoke(PROMPT["REASON"](processed_image, sensors_list, project_json))
-            
-            print(project_sensor_instructions)
-            
-            project_description = model.invoke(PROMPT["DESCRIPTION"](processed_image, sensors_list, project_json, project_sensor_instructions))
-            
-            print(project_description)
         except Exception as e:
             print(e)
             return None
@@ -266,8 +339,8 @@ def process(image_urls: List[str], width_scale: int=1, height_scale: int=1):
 
 
 available_sensors = [
-    "f5958714-3a52-4688-a24d-cc7efde8d3e0",
-    "eebc2e0f-f9c0-4332-8ccc-06be7c463a1d"
+    "eebc2e0f-f9c0-4332-8ccc-06be7c463a1d",
+    "888fbd2d-f2bd-494e-9217-69cd69cf84ca"
 ]
 
 
