@@ -100,8 +100,11 @@ export default function IoTDashboard({ projectId }: { projectId: string }) {
 
       setDevices(data);
     }
+    const it = setInterval(() => {
+      fetchDevices();
+    }, 1000);
 
-    fetchDevices();
+    return () => clearInterval(it);
   }, []);
 
   return (
